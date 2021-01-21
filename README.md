@@ -1,1 +1,1 @@
-Please check [demo](https://goofy-kowalevski-2e0292.netlify.app/).
+Please check [demo](https://hungry-mayer-e9c7bd.netlify.app/).
