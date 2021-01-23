@@ -74,3 +74,36 @@ thead tr {
 .pointer {
   cursor: pointer;
 }
+
+[data-title] {
+  position: relative;
+}
+
+[data-title]:hover::before {
+  content: attr(data-title);
+  position: absolute;
+  bottom: -26px;
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 2px;
+  background: red;
+  color: #fff;
+  font-size: 12px;
+  font-family: sans-serif;
+  white-space: nowrap;
+  z-index: 999;
+}
+[data-title]:hover::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 8px;
+  display: inline-block;
+  color: #fff;
+  border: 8px solid transparent;
+  border-bottom: 8px solid red;
+}
+
+.wrapTable {
+  height: 33rem;
+}

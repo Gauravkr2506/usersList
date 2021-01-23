@@ -1,0 +1,14 @@
+.paginationRoot {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px;
+}
+
+.paginationLeft {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.activePage {
+  background-color: chartreuse;
+}

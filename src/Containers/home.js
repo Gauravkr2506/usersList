@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { countryCodeList } from "./../utilities/countryCodes";
+import Debounce from "./../utilities/debounce";
 import {
   updateReducer,
   updateUserData,
@@ -9,18 +10,28 @@ import {
 
 const navigationType = { ADD: "push", UPDATE: "replace" };
 
-const NAME_ERROR = { title: "Please enter name", className: "formError" };
-const ADDRESS_ERROR = { title: "Please enter address", className: "formError" };
-const COUNTRY_ERROR = {
-  title: "Please select country",
+const NAME_ERROR = {
+  "data-title": "Please enter name",
   className: "formError",
 };
-const PINCODE_ERROR = { title: "Please enter pincode", className: "formError" };
+const ADDRESS_ERROR = {
+  "data-title": "Please enter address",
+  className: "formError",
+};
+const COUNTRY_ERROR = {
+  "data-title": "Please select country",
+  className: "formError",
+};
+const PINCODE_ERROR = {
+  "data-title": "Please enter pincode",
+  className: "formError",
+};
 const STATE_ERROR = {
-  title: "Please enter valid pincode",
+  "data-title": "Please enter valid pincode",
   className: "formError",
 };
 
+const debounceHandler = {};
 const Home = (props) => {
   const {
     history,
@@ -33,6 +44,13 @@ const Home = (props) => {
     formType,
   } = props;
   const { updateReducer, updateUserData, getStateFromAPIAction } = props;
+
+  if (!debounceHandler.getStateFromAPIAction) {
+    debounceHandler.getStateFromAPIAction = Debounce(
+      getStateFromAPIAction,
+      1000
+    );
+  }
 
   const [isSubmit, setIsSubmit] = useState(false);
 
@@ -73,7 +91,7 @@ const Home = (props) => {
   const setValueForCountry = (e) => {
     updateUserData({ country: e.target.value });
     if (pinCode !== "") {
-      getStateFromAPIAction(pinCode, e.target.value);
+      debounceHandler.getStateFromAPIAction(pinCode, e.target.value);
     }
   };
 
@@ -81,7 +99,7 @@ const Home = (props) => {
     console.log(props);
     updateUserData({ pinCode: e.target.value });
     if (country !== "") {
-      getStateFromAPIAction(e.target.value, country);
+      debounceHandler.getStateFromAPIAction(e.target.value, country);
     }
   };
 
@@ -149,7 +167,7 @@ const Home = (props) => {
           {...getQueryResult(
             isSubmit && pinCode.length === 0
               ? PINCODE_ERROR
-              : isSubmit && state.length === 0
+              : isSubmit && country.length && state.length === 0
               ? STATE_ERROR
               : {}
           )}
