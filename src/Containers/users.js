@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import Sorting from "./../Component/Sorting";
 
 import { updateReducer, updateUserData } from "./../Store/action";
 
 import Pagination from "../Component/Pagination";
 import { paginationConstant } from "./../Constant/pagination";
 
-const columnList = ["No", "name", "address", "country", "pinCode", "state"];
+const columnList = ["name", "address", "country", "pinCode", "state"];
 
-function Users({ history, usersList, updateReducer, updateUserData }) {
+function Users({
+  history,
+  usersList: mainList,
+  updateReducer,
+  updateUserData,
+}) {
+  const usersList = JSON.parse(JSON.stringify(mainList));
   const [searchText, setSearchText] = useState("");
   const [pageNo, setPageNo] = useState(0);
   const [pageSize, setPageSize] = useState(paginationConstant.defaultPageSize);
-  // const [data, setData] = useState([]);
+  const [sortType, setSortType] = useState({ key: null, value: null });
 
   useEffect(() => {
     if (searchText) {
@@ -20,16 +29,47 @@ function Users({ history, usersList, updateReducer, updateUserData }) {
     }
   }, [searchText]);
 
-  const searchFilter = () => {
-    if (searchText) {
-      return usersList.filter((obj) =>
-        obj.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
-      );
+  const compare = (a, b) => {
+    const { key } = sortType;
+    if (a[key] < b[key]) {
+      return -1;
+    }
+    if (a[key] > b[key]) {
+      return 1;
+    }
+    return 0;
+  };
+
+  const getSortData = () => {
+    debugger;
+    const { value } = sortType;
+    if (value) {
+      if (value === "ASC") {
+        return usersList.sort((a, b) => compare(a, b));
+      } else if (value === "DESC") {
+        return usersList.sort((a, b) => compare(b, a));
+      }
+      return usersList;
     }
     return usersList;
   };
 
-  const searchFilterData = searchFilter();
+  const sortData = getSortData();
+
+  const getSearchFilterData = () => {
+    if (searchText) {
+      return sortData.filter((obj) =>
+        columnList.some((column) =>
+          obj[column]
+            .toLocaleLowerCase()
+            .includes(searchText.toLocaleLowerCase())
+        )
+      );
+    }
+    return sortData;
+  };
+
+  const searchFilterData = getSearchFilterData();
 
   const tableData = searchFilterData.slice(
     pageNo * pageSize,
@@ -44,6 +84,11 @@ function Users({ history, usersList, updateReducer, updateUserData }) {
     updateReducer({ usersList });
     usersList = JSON.stringify(usersList);
     localStorage.setItem("usersList", usersList);
+    if (tableData.length <= 1) {
+      if (pageNo) {
+        setPageNo(pageNo - 1);
+      }
+    }
   };
 
   const updateRow = (row) => () => {
@@ -52,11 +97,19 @@ function Users({ history, usersList, updateReducer, updateUserData }) {
     history.replace("/");
   };
 
+  const onSort = (key) => (value) => () => {
+    setSortType({ key, value });
+  };
+
   return (
     <>
+      <ToastContainer />
       <input
         value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
+        onChange={(e) => {
+          setSearchText(e.target.value);
+          setPageNo(0);
+        }}
         type="text"
         placeholder="Search"
       />
@@ -64,8 +117,15 @@ function Users({ history, usersList, updateReducer, updateUserData }) {
         <table>
           <thead>
             <tr>
+              <th>No</th>
               {columnList.map((column) => (
-                <th key={column}>{column}</th>
+                <th key={column}>
+                  {column}{" "}
+                  <Sorting
+                    onSort={onSort(column)}
+                    sortType={sortType.key === column ? sortType.value : null}
+                  />
+                </th>
               ))}
               <th>Action</th>
             </tr>
@@ -73,20 +133,22 @@ function Users({ history, usersList, updateReducer, updateUserData }) {
           <tbody>
             {tableData.map((user, index) => (
               <tr key={user.id + index}>
-                {columnList.map((column) =>
-                  column === "No" ? (
-                    <td key={user.id + index + column}>{index + 1}</td>
-                  ) : (
-                    <td key={user.id + index + column}>{user[column]}</td>
-                  )
-                )}
+                <td key={user.id + index}>{index + 1}</td>
+                {columnList.map((column) => (
+                  <td key={user.id + index + column}>{user[column]}</td>
+                ))}
                 <td>
-                  <p onClick={updateRow(user)} className="greenColor pointer">
-                    UPDATE
-                  </p>{" "}
-                  <p onClick={deleteRow(user)} className="redColor pointer">
-                    DELETE
-                  </p>
+                  <FaEdit
+                    title="Edit Record"
+                    onClick={updateRow(user)}
+                    className="greenColor pointer"
+                  />
+                  &nbsp;
+                  <FaTrashAlt
+                    title="Delete Record"
+                    onClick={deleteRow(user)}
+                    className="redColor pointer"
+                  />
                 </td>
               </tr>
             ))}

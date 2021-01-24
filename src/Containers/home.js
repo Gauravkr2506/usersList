@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+
 import { countryCodeList } from "./../utilities/countryCodes";
-import Debounce from "./../utilities/debounce";
+import { Debounce, allowOnlyAlphabets } from "./../utilities/common";
 import {
   updateReducer,
   updateUserData,
@@ -114,6 +115,8 @@ const Home = (props) => {
         <span>*</span> :
         <br />
         <input
+          onKeyDown={allowOnlyAlphabets}
+          maxLength="20"
           value={name}
           type="text"
           name="name"
