@@ -93,7 +93,7 @@ function Users({
   const updateRow = (row) => () => {
     updateReducer({ formType: "UPDATE" });
     updateUserData(row);
-    history.replace("/");
+    history.replace("/usersList");
   };
 
   const onSort = (key) => (value) => () => {

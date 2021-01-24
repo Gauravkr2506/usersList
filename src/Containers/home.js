@@ -86,7 +86,7 @@ const Home = (props) => {
     updateReducer({ usersList, formType: "ADD" });
     usersList = JSON.stringify(usersList);
     localStorage.setItem("usersList", usersList);
-    history[navigationType[formType]]("/usersList");
+    history[navigationType[formType]]("/usersList/list");
   };
 
   const setValueForCountry = (e) => {

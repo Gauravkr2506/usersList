@@ -9,8 +9,11 @@ export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/usersList" render={(props) => <Users {...props} />} />
-        <Route path="/" render={(props) => <Home {...props} />} />
+        <Route
+          path="/usersList/list"
+          render={(props) => <Users {...props} />}
+        />
+        <Route path="/usersList" render={(props) => <Home {...props} />} />
       </Switch>
     </Router>
   );
