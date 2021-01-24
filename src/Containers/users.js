@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import Sorting from "./../Component/Sorting";
 
@@ -103,7 +102,6 @@ function Users({
 
   return (
     <>
-      <ToastContainer />
       <input
         value={searchText}
         onChange={(e) => {
